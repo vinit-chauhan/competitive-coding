@@ -1,0 +1,93 @@
+// WA
+
+#include <bits/stdc++.h>
+using namespace std;
+
+#define debug(x) cerr << #x << " : " << x << endl;
+
+typedef pair<long long int, long long int> PII;
+
+double dist(PII cord, PII baseCord) {
+    double dis = sqrt(pow(baseCord.first - cord.first, 2) + pow(baseCord.second - cord.second, 2));
+    return dis;
+}
+
+double min(double d1, double d2) {
+    if(d1 <= d2) return d1;
+    else return d2;
+}
+
+PII find_min_dist(vector<PII> vec, PII cord) {
+    PII temp = vec[0];
+    double minDist = dist(vec[0], cord);
+    for(int it = 1; it != vec.size(); it++) {
+        if(dist(vec[it], cord) < minDist) {
+            minDist = dist(vec[it], cord);
+            temp = vec[it];
+        }
+    }
+    return temp;
+}
+
+int main() {
+    int test;
+    cin >> test;
+    while(test--) {
+
+        double minDistance = 0;
+        PII myCord, nMin, mMin;
+        vector<PII> nList, mList, kList;
+        double nDist = 0,
+               mDist = 0;
+        vector<PII> minList;
+
+
+        long long int x, y;
+        cin >> x; cin >> y;
+        myCord = {x, y};
+        int n, m, k;
+        cin >>n; cin >> m; cin >> k;
+        //N list
+        for(int i = 0; i < n; i++) {
+            cin >> x; cin >> y;
+            nList.emplace_back(make_pair(x, y));
+        }
+        // M list
+        for(int i = 0; i < m; i++) {
+            cin >> x; cin >> y;
+            mList.emplace_back(make_pair(x, y));
+        }
+        // K list
+        for(int i = 0; i < k; i++) {
+            cin >> x; cin >> y;
+            kList.emplace_back(make_pair(x, y));
+        }
+
+        nMin = find_min_dist(nList, myCord); // myCord -> N List
+        mMin = find_min_dist(mList, myCord); // myCord -> M List
+        nDist += dist(nMin, myCord); // myCord-->N List min distance
+        mDist += dist(mMin, myCord); // myCord-->M List min distance
+
+        minList.emplace_back(nMin);
+        minList.emplace_back(mMin);
+
+        nMin = find_min_dist(mList, minList[0]); // smallest path of N list -> mList
+        mMin = find_min_dist(nList, minList[1]); // smallest path of M list -> nList
+        nDist += dist(nMin, minList[0]); // myCord-->N List min distance --> M List min distane
+        mDist += dist(mMin, minList[1]); // myCord-->M List min distance --> N List min distane
+
+
+        minList.emplace_back(nMin);
+        minList.emplace_back(mMin);
+
+        nMin = find_min_dist(kList, minList[2]); // smallest path of N list -> mList
+        mMin = find_min_dist(kList, minList[3]); // smallest path of M list -> nList
+        nDist += dist(nMin, minList[2]); // myCord-->N List min distance --> M List min distane
+        mDist += dist(mMin, minList[3]); // myCord-->M List min distance --> N List min distane
+
+        minDistance = min(nDist, mDist);
+        printf("%.10f\n", minDistance);
+
+    }
+    return 0;
+}
